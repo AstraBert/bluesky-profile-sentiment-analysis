@@ -1,0 +1,30 @@
+name: Update LlamaAgent Deployment
+
+on:
+  push: 
+    branches:
+        - main
+    paths:
+      - "src/bluesky_profile_sentiment_analysis/**"
+      - "pyproject.toml"
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Set up Python
+        run: uv python install 3.13
+
+      - name: Update deployment
+        env:
+          LLAMA_CLOUD_API_KEY: ${{ secrets.LLAMA_CLOUD_API_KEY }}
+          LLAMA_CLOUD_PROJECT_ID: ${{ secrets.LLAMA_CLOUD_PROJECT_ID }}
+          DEPLOYMENT_ID: "bluesky-profile-sentiment-analysis" 
+        run: |
+            uvx llamactl auth token --project-id $LLAMA_CLOUD_PROJECT_ID --api-key $LLAMA_CLOUD_API_KEY --no-interactive
+            uvx llamactl deployments update $DEPLOYMENT_ID --no-interactive
