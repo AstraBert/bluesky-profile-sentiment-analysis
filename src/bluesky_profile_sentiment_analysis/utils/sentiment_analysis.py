@@ -4,15 +4,29 @@ from nlpcloud import Client
 from typing import Optional, Union
 from statistics import mean
 from logging import getLogger
-from .models import ScoredLabel, SentimentDescription
+from .models import ScoredLabel, SentimentDescription, Keywords
 
 logger = getLogger(__name__)
 
 NLPCLOUD_CLIENT = Client(model=os.getenv("NLPCLOUD_MODEL", ""), token=os.getenv("NLPCLOUD_TOKEN"), gpu=True)
 
+def extract_keywords(text: str) -> Optional[Keywords]:
+    try: 
+        kws = NLPCLOUD_CLIENT.kw_kp_extraction(
+            text, 
+        )
+    except Exception as e:
+        logger.error(f"An error occurred: {e}")
+        return None
+    return Keywords.from_dict(kws)
+
 def analyze_sentiment(text: str) -> Optional[list[ScoredLabel]]:
+    kws = extract_keywords(text)
+    target = kws.keywords_and_keyphrases[0] if kws else None
+    if target:
+        logger.info(f"Target for sentiment detection: {target}")
     try:
-        analysis = NLPCLOUD_CLIENT.sentiment(text)
+        analysis = NLPCLOUD_CLIENT.sentiment(text, target=target)
     except Exception as e:
         logger.error(f"An error occurred: {e}")
         return None
