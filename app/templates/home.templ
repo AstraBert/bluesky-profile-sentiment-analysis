@@ -1,0 +1,39 @@
+package templates
+
+templ Home() {
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Bluesky Posts Sentiment Analysis</title>
+        <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js"></script>
+        <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    </head>
+    <div class="flex flex-col justify-center items-center gap-y-8">
+        @NavBar()
+        <h2 class="text-lg font-semibold text-gray-600">Analyze emotions from the 5 latest long-form posts from any BlueSky user</h2>
+        <a title="OmegaFallon, CC BY 4.0 &lt;https://creativecommons.org/licenses/by/4.0&gt;, via Wikimedia Commons" href="https://commons.wikimedia.org/wiki/File:OMORI_Emotions_Chart.svg"><img width="400" alt="OMORI Emotions Chart" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/OMORI_Emotions_Chart.svg/256px-OMORI_Emotions_Chart.svg.png?20250303153148"></a>
+        <form hx-post="/analysis" hx-target="#sentimentAnalysis" hx-trigger="submit">
+            <fieldset class="fieldset bg-base-100 border-base-300 rounded-box w-200 border p-4">
+                <legend class="fieldset-legend text-lg">User handle</legend>
+                <label class="label flex justify-center">
+                    <input type="text" class="input" placeholder="you.bsky.social" name="userHandle" />
+                </label>
+            </fieldset>
+            <div class="mt-8 flex flex-col justify-center">
+                <button
+                type="submit"
+                class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                hx-indicator="#loadingIndicator"
+                >Analyse</button>
+            </div>
+            <br>
+            <br>
+            <div id="loadingIndicator" class="htmx-indicator flex justify-center items-center">
+                <span class="loading loading-spinner loading-lg"></span>
+            </div>
+        </form>
+        <div id="sentimentAnalysis">
+        </div>
+    </div>
+}
